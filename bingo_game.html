@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Lansia Berdaya – Healthy Habits Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f0f8f0 0%, #e8f4f8 50%, #fdf2e9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #5a6b5d;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(168, 200, 168, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(173, 216, 230, 0.1) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #a8c8a8, #b8d8b8);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .title {
+            font-size: 1.9rem;
+            color: #4a5d4a;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #6b7b6b;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .instructions {
+            font-size: 1rem;
+            color: #4a5d4a;
+            background: rgba(255,255,255,0.8);
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-weight: 600;
+            border: 2px solid rgba(168, 200, 168, 0.4);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.8);
+            padding: 18px 25px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid rgba(168, 200, 168, 0.2);
+        }
+
+        .level-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #4a5d4a;
+        }
+
+        .stars {
+            display: flex;
+            gap: 8px;
+        }
+
+        .star {
+            font-size: 1.8rem;
+            color: #ddd;
+            transition: all 0.4s ease;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .star.filled {
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            transform: scale(1.1);
+        }
+
+        .bingo-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            background: rgba(255,255,255,0.95);
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+            border: 3px solid rgba(168, 200, 168, 0.3);
+        }
+
+        .bingo-cell {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #fdf2e9, #f0f8f0);
+            border: 3px solid #d4c5b9;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            padding: 8px;
+        }
+
+        .bingo-cell:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            border-color: #a8c8a8;
+            background: linear-gradient(135deg, #f8f0e7, #eef6ee);
+        }
+
+        .bingo-cell.marked {
+            background: linear-gradient(135deg, #a8c8a8, #98b898);
+            border-color: #7a9a7a;
+            transform: scale(0.95);
+        }
+
+        .bingo-cell.marked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            z-index: 3;
+            font-weight: bold;
+        }
+
+        .cell-icon {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .cell-text {
+            font-size: 0.75rem;
+            text-align: center;
+            color: #4a5d4a;
+            font-weight: bold;
+            line-height: 1.2;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .bingo-cell.marked .cell-icon,
+        .bingo-cell.marked .cell-text {
+            opacity: 0.4;
+            filter: grayscale(50%);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #fdf2e9, #f0f8f0);
+            padding: 35px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            max-width: 90%;
+            animation: slideIn 0.4s ease;
+            border: 4px solid rgba(168, 200, 168, 0.5);
+        }
+
+        .certificate {
+            background: linear-gradient(135deg, #fff, #f8f8f8);
+            border: 6px solid #d4af37;
+            padding: 45px;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .certificate::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+        }
+
+        .certificate-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .certificate-title {
+            font-size: 1.6rem;
+            color: #d4af37;
+            margin-bottom: 25px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .certificate-text {
+            font-size: 1.1rem;
+            color: #4a5d4a;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .signature {
+            font-style: italic;
+            color: #8a6914;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: linear-gradient(135deg, #a8c8a8, #98b898);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #98b898, #88a888);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: #ffd700;
+            animation: confetti-fall 4s linear forwards;
+            z-index: 999;
+            border-radius: 50%;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(1080deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translate(-50%, -70%); opacity: 0; }
+            to { transform: translate(-50%, -50%); opacity: 1; }
+        }
+
+        @keyframes ding {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(0.95); }
+        }
+
+        .ding-animation {
+            animation: ding 0.2s ease-in-out;
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 1.5rem;
+            }
+            
+            .bingo-board {
+                gap: 8px;
+                padding: 20px;
+            }
+            
+            .cell-icon {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .cell-text {
+                font-size: 0.65rem;
+            }
+            
+            .modal-content {
+                padding: 25px;
+            }
+            
+            .certificate {
+                padding: 30px;
+            }
+
+            .certificate-logo {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Bingo Lansia Berdaya</h1>
+            <p class="subtitle">Healthy Habits Edition (By Bude Ocie)</p>
+            <div class="instructions">
+                Tap each activity you complete. Get one full line to win and move to the next level!
+            </div>
+        </div>
+
+        <div class="level-info">
+            <div class="level-text">Level <span id="currentLevel">1</span> of 5</div>
+            <div class="stars">
+                <span class="star" id="star1">⭐</span>
+                <span class="star" id="star2">⭐</span>
+                <span class="star" id="star3">⭐</span>
+                <span class="star" id="star4">⭐</span>
+                <span class="star" id="star5">⭐</span>
+            </div>
+        </div>
+
+        <div class="bingo-board" id="bingoBoard">
+            <!-- Bingo cells will be generated here -->
+        </div>
+    </div>
+
+    <!-- Level Complete Modal -->
+    <div class="modal" id="levelModal">
+        <div class="modal-content">
+            <h2 style="color: #a8c8a8; margin-bottom: 20px; font-size: 1.8rem;">🎉 Fantastic!</h2>
+            <p style="font-size: 1.2rem; color: #4a5d4a; font-weight: 600;">Great! Keep your healthy habits!</p>
+            <button class="close-btn" onclick="closeModal()">Continue to Next Level</button>
+        </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div class="modal" id="certificateModal">
+        <div class="modal-content">
+            <div class="certificate">
+                <img src="logo_bukanlansiabiasa.jpg" alt="Logo Bukan Lansia Biasa" class="certificate-logo" onerror="this.style.display='none';">
+                <div class="certificate-title">🏆 Certificate of Completion 🏆</div>
+                <div class="certificate-text">
+                    Congratulations!<br>
+                    You have completed<br>
+                    <strong>Bingo Lansia Berdaya – Healthy Habits Edition!</strong>
+                </div>
+                <div class="signature">– Signed: Bude Ocie</div>
+            </div>
+            <button class="close-btn" onclick="restartGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const activities = [
+            { icon: 'drink_water.jpg', text: 'Drink Water' },
+            { icon: 'morning_walk.jpg', text: 'Morning Walk' },
+            { icon: 'eat_fruit.jpg', text: 'Eat Fruit' },
+            { icon: 'take_vitamins.jpg', text: 'Take Vitamins' },
+            { icon: 'call_family.jpg', text: 'Call Family' },
+            { icon: 'stretch_arms.jpg', text: 'Stretch Arms' },
+            { icon: 'pray.jpg', text: 'Pray' },
+            { icon: 'read_book.jpg', text: 'Read Book' },
+            { icon: 'water_plants.jpg', text: 'Water Plants' },
+            { icon: 'sleep_early.jpg', text: 'Sleep Early' }
+        ];
+
+        let currentLevel = 1;
+        let board = [];
+        let markedCells = [];
+
+        // Audio context for ding sound
+        let audioContext;
+        
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playDingSound() {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        function initializeGame() {
+            currentLevel = 1;
+            updateLevelDisplay();
+            generateBoard();
+            initAudio();
+        }
+
+        function generateBoard() {
+            const boardElement = document.getElementById('bingoBoard');
+            boardElement.innerHTML = '';
+            board = [];
+            markedCells = Array(25).fill(false);
+
+            // Create a shuffled array of activities for this level
+            const shuffledActivities = [...activities];
+            for (let i = shuffledActivities.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledActivities[i], shuffledActivities[j]] = [shuffledActivities[j], shuffledActivities[i]];
+            }
+
+            // Fill the 5x5 board
+            for (let i = 0; i < 25; i++) {
+                const activity = shuffledActivities[i % 10];
+                board.push(activity);
+
+                const cell = document.createElement('div');
+                cell.className = 'bingo-cell';
+                cell.onclick = () => markCell(i);
+
+                const icon = document.createElement('img');
+                icon.className = 'cell-icon';
+                icon.src = activity.icon;
+                icon.alt = activity.text;
+                icon.onerror = function() {
+                    this.style.display = 'none';
+                };
+                
+                const text = document.createElement('div');
+                text.className = 'cell-text';
+                text.textContent = activity.text;
+
+                cell.appendChild(icon);
+                cell.appendChild(text);
+                boardElement.appendChild(cell);
+            }
+        }
+
+        function markCell(index) {
+            if (markedCells[index]) return;
+
+            markedCells[index] = true;
+            const cells = document.querySelectorAll('.bingo-cell');
+            cells[index].classList.add('marked');
+            cells[index].classList.add('ding-animation');
+
+            // Play ding sound
+            playDingSound();
+
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                cells[index].classList.remove('ding-animation');
+            }, 200);
+
+            checkForBingo();
+        }
+
+        function checkForBingo() {
+            const lines = [
+                // Horizontal lines
+                [0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14], [15, 16, 17, 18, 19], [20, 21, 22, 23, 24],
+                // Vertical lines
+                [0, 5, 10, 15, 20], [1, 6, 11, 16, 21], [2, 7, 12, 17, 22], [3, 8, 13, 18, 23], [4, 9, 14, 19, 24],
+                // Diagonal lines
+                [0, 6, 12, 18, 24], [4, 8, 12, 16, 20]
+            ];
+
+            for (const line of lines) {
+                if (line.every(index => markedCells[index])) {
+                    levelComplete();
+                    return;
+                }
+            }
+        }
+
+        function levelComplete() {
+            createConfetti();
+            updateStars();
+            
+            if (currentLevel === 5) {
+                setTimeout(() => {
+                    document.getElementById('certificateModal').style.display = 'block';
+                }, 1500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('levelModal').style.display = 'block';
+                }, 1500);
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffa726', '#ab47bc'];
+            
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.remove();
+                        }
+                    }, 5000);
+                }, i * 30);
+            }
+        }
+
+        function updateStars() {
+            const star = document.getElementById(`star${currentLevel}`);
+            star.classList.add('filled');
+        }
+
+        function updateLevelDisplay() {
+            document.getElementById('currentLevel').textContent = currentLevel;
+        }
+
+        function closeModal() {
+            document.getElementById('levelModal').style.display = 'none';
+            currentLevel++;
+            updateLevelDisplay();
+            generateBoard();
+        }
+
+        function restartGame() {
+            document.getElementById('certificateModal').style.display = 'none';
+            
+            // Reset stars
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`star${i}`).classList.remove('filled');
+            }
+            
+            initializeGame();
+        }
+
+        // Initialize the game when page loads
+        window.onload = initializeGame;
+
+        // Handle click to enable audio context (required by browsers)
+        document.addEventListener('click', function() {
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }, { once: true });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97207fad155b49f3',t:'MTc1NTY3ODMxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
